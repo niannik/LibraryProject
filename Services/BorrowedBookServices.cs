@@ -1,6 +1,8 @@
-﻿using Data;
+﻿using Common;
+using Data;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Services.Errors;
 using Services.Models;
 using System;
 using System.Collections.Generic;
@@ -18,19 +20,19 @@ namespace Services
         {
             this.context = context;
         }
-        public async Task<bool> AddBorrowedBook(AddUpdateBrrowedBookModel model)
+        public async Task<Result> AddBorrowedBook(AddUpdateBrrowedBookModel model)
         {
             var bookIsAlreadyInBorrowed = await context.BorrowedBooks.AnyAsync(x => x.BookId == model.BookId && x.EndDate == null);
             if (bookIsAlreadyInBorrowed)
             {
                 // book already in use
-                return false;
+                return BorrowedBooksErrors.InvalidBorrow;
             }
 
             if(await context.Books.AnyAsync(x => x.Id == model.BookId) == false)
             {
                 // book not found
-                return false;
+                return BookErrors.BookNotFound;
             }
 
             var borrow = new BorrowedBook()
@@ -45,31 +47,32 @@ namespace Services
             };
             context.BorrowedBooks.Add(borrow);
             await context.SaveChangesAsync();
-            return true;
+            return Result.Success();
         }
         public async Task<BorrowedBook?> FindById(int id)
         {
 
             var borrowedBook = await context.BorrowedBooks.Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
-            if (borrowedBook == null)
-            {
-                //
-            }
             return borrowedBook;
         }
-        public async Task UpdateStatusToRefunded(int id)
+        public async Task<Result> UpdateStatusToRefunded(int id)
         {
             var borrowedBook =await FindById(id);
+            if(borrowedBook == null)
+            {
+                return BookErrors.BookNotFound;
+            }
             if(borrowedBook!.EndDate == null)
             {
                 borrowedBook.EndDate = DateTime.Now;
                 await context.SaveChangesAsync();
+                return Result.Success();
             }
 
             else
             {
-                //Exception
+                return BorrowedBooksErrors.InvalidBorrow;
             }
         }
        

@@ -1,7 +1,15 @@
-﻿using Entities;
-using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.Common;
 using Services;
+
+using Microsoft.AspNetCore.Mvc;
 using Services.Models.BookModels;
+using MyApi.ExceptionExtensions;
+using Common;
 namespace MyApi.Controllers
 {
     [Route("api/[controller]")]
@@ -15,48 +23,45 @@ namespace MyApi.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ShowBookModel?>> Get()
+        public async Task<ActionResult<List<ShowBookModel?>>> Get()
         {
             var books = await bookServices.ShowBooks();
-            return books;
+            return books.ToHttpResponse()!;
         }
-        [Route("Filter")]
-        [HttpGet]
+        [HttpGet("Filter")]
         public async Task<ActionResult<List<ShowBookModel?>>> Filter([FromQuery]ShowFilteredBook showFilteredBook)
         {
-            var books = await bookServices.ShowBook(showFilteredBook);
-            if (books == null)
-            {
-                return NotFound();
-            }
-            return Ok(books);
+            var books = await bookServices.FilterBook(showFilteredBook);
+            return books.ToHttpResponse()!;
         }
 
         [Route("Info")]
-        public async Task<InfoBookModel> GetInfo([FromQuery] int id)
+        [HttpGet]
+        public async Task<ActionResult<InfoBookModel>> GetInfo([FromQuery] int id)
         {
             var book = await bookServices.ShowBookInfo(id);
-            return book;
+            return book.ToHttpResponse();
         }
         [HttpPost]
         public async Task<ActionResult> Create(CreateBookModel book)
         {
-            await bookServices.AddAsync(book);
-            return Ok();
+            Result result = await bookServices.AddAsync(book);
+            return result.ToHttpResponse();
+            
         }
 
         [HttpPut]
         public async Task<ActionResult> Update(UpdateBookModel book)
         {
-            await bookServices.UpdateAsync(book);
-            return Ok();
+            Result result = await bookServices.UpdateAsync(book);
+            return result.ToHttpResponse();
         }
          
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            await bookServices.DeleteAsync(id);
-            return Ok();
+            Result result = await bookServices.DeleteAsync(id);
+            return result.ToHttpResponse();
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Entities;
+﻿using Common;
+using Entities;
 using Microsoft.AspNetCore.Mvc;
+using MyApi.ExceptionExtensions;
 using Services;
 using Services.Models;
 
@@ -15,30 +17,30 @@ namespace MyApi.Controllers
             this.categoryServices = categoryServices;
         }
         [HttpGet]
-        public async Task<ActionResult<Category>> Get(int id)
+        public async Task<ActionResult<List<ShowCategoriesModel>>> Get()
         {
-            var category = await categoryServices.FindById(id);
-            return Ok(category);
+            var categories = await categoryServices.ShowCategories();
+            return categories.ToHttpResponse();
         }
         [HttpPost]
         public async Task<ActionResult> Create(CategoryModel category)
         {
-            await categoryServices.AddAsync(category);
-            return Ok();
+            Result result =await categoryServices.AddAsync(category);
+            return result.ToHttpResponse();
         }
 
         [HttpPut]
         public async Task<ActionResult> Update(UpdateCategoryModel category)
         {
-            await categoryServices.UpdateAsync(category);
-            return Ok();
+            Result result = await categoryServices.UpdateAsync(category);
+            return result.ToHttpResponse();
         }
 
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            await categoryServices.DeleteAsync(id);
-            return Ok();
+            Result result = await categoryServices.DeleteAsync(id);
+            return result.ToHttpResponse();
         }
     }
 }

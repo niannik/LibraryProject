@@ -16,11 +16,8 @@ namespace Services.Models.BookModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (Title == null || Title.Length == 0)
-            {
-                yield return new ValidationResult("نام کتاب نمیتواند خالی باشد");
-            }
-            if (PublicationDate > 2024 || PublicationDate == null)
+            var y = DateTime.Now.Year;
+            if (PublicationDate > DateTime.Now.Year)
             {
                 yield return new ValidationResult("کتابی که هنوز چاپ نشده است را نمیتوان افزود");
             }

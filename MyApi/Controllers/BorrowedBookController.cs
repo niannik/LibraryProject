@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common;
+using Microsoft.AspNetCore.Mvc;
+using MyApi.ExceptionExtensions;
 using Services;
 using Services.Models;
 
@@ -33,16 +35,16 @@ namespace MyApi.Controllers
         [HttpPost]
         public async Task<ActionResult> Add(AddUpdateBrrowedBookModel model)
         {
-            await borrowedBookServices.AddBorrowedBook(model);
-            return Ok();
+            Result result = await borrowedBookServices.AddBorrowedBook(model);
+            return result.ToHttpResponse();
         }
 
         [Route("Refund")]
         [HttpPut]
         public async Task<ActionResult> Refund(int id)
         {
-            await borrowedBookServices.UpdateStatusToRefunded(id);
-            return Ok();
+            Result result =  await borrowedBookServices.UpdateStatusToRefunded(id);
+            return result.ToHttpResponse();
         }
 
     }

@@ -1,6 +1,8 @@
-﻿using Data;
+﻿using Common;
+using Data;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Services.Errors;
 using Services.Models.AuthorModels;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace Services
         {
             this.context = context;
         }
-        public async Task<List<ShowAuthorModel>> ShowAuthors()
+        public async Task<Result<List<ShowAuthorModel>>> ShowAuthors()
         {
             var authors =await context.Authors
                 .Select(x => new ShowAuthorModel
@@ -28,6 +30,10 @@ namespace Services
                     BooksCount = x.Books!.Count(),
 
                 }).ToListAsync();
+            if (authors.Count == 0)
+            {
+                return AuthorErrors.EmptyAuthorTable;
+            }
             return authors;
         }
 
@@ -38,7 +44,7 @@ namespace Services
             return author;
         }
 
-        public async Task AddAsync(CreateAuthorModel model)
+        public async Task<Result> AddAsync(CreateAuthorModel model)
         {
             var author = new Author()
             {
@@ -46,25 +52,30 @@ namespace Services
             };
             context.Authors.Add(author);
             await context.SaveChangesAsync();
+            return Result.Success();
         }
-        public async Task DeleteAsync(int id)
+        public async Task<Result> DeleteAsync(int id)
         {
             Author? author = await FindById(id);
-            if(author != null)
+            if(author == null)
             {
-                context.Authors.Remove(author);
+                return AuthorErrors.AuthorNotFound;
             }
+            context.Authors.Remove(author);
             await context.SaveChangesAsync();
+            return Result.Success();
         }
 
-        public async Task UpdateAsync(UpdateAuthorModel model)
+        public async Task<Result> UpdateAsync(UpdateAuthorModel model)
         {
             Author? oldAuthor = await FindById(model.Id);
-            if(oldAuthor != null)
+            if(oldAuthor == null)
             {
-                oldAuthor.Name = model.Name;
+                return AuthorErrors.AuthorNotFound;
             }
+            oldAuthor.Name = model.Name;
             await context.SaveChangesAsync();
+            return Result.Success();
         }  
 
     }

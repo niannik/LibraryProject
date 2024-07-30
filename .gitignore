@@ -1,5 +1,5 @@
-﻿# Created by https://www.toptal.com/developers/gitignore/api/rider,visualstudio,aspnetcore,csharp
-# Edit at https://www.toptal.com/developers/gitignore?templates=rider,visualstudio,aspnetcore,csharp
+﻿# Created by https://www.toptal.com/developers/gitignore/api/csharp,aspnetcore,visualstudio,rider,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=csharp,aspnetcore,visualstudio,rider,visualstudiocode
 
 ### ASPNETCore ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -149,6 +149,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
+# TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
@@ -601,6 +602,19 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+### VisualStudioCode ###
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
 ### VisualStudio ###
 
 # User-specific files
@@ -782,7 +796,4 @@ fabric.properties
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/rider,visualstudio,aspnetcore,csharp
-src/Api/wwwroot/*
-# exception to the rule
-!src/Api/wwwroot/.gitkeep 
+# End of https://www.toptal.com/developers/gitignore/api/csharp,aspnetcore,visualstudio,rider,visualstudiocode

@@ -1,9 +1,10 @@
-﻿using Entities;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Common;
 using Services;
 using Services.Models.AuthorModels;
+using MyApi.ExceptionExtensions;
 
-namespace MyApi.Controllers
+namespace MyApi
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -15,30 +16,30 @@ namespace MyApi.Controllers
             this.authorServices = authorServices;
         }
         [HttpGet]
-        public async Task<List<ShowAuthorModel>> Get()
+        public async Task<ActionResult<List<ShowAuthorModel>>> Get()
         {
-            var authors =await authorServices.ShowAuthors();
-            return authors;
+            var authors = await authorServices.ShowAuthors();
+            return authors.ToHttpResponse();
         }
         [HttpPost]
         public async Task<ActionResult> Create(CreateAuthorModel author)
         {
-            await authorServices.AddAsync(author);
-            return Ok();
+            Result result = await authorServices.AddAsync(author);
+            return result.ToHttpResponse();
         }
 
         [HttpPut]
         public async Task<ActionResult> Update(UpdateAuthorModel model)
         {
-            await authorServices.UpdateAsync(model);
-            return Ok();
+            Result result = await authorServices.UpdateAsync(model);
+            return result.ToHttpResponse();
         }
 
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            await authorServices.DeleteAsync(id);
-            return Ok();
+            Result result = await authorServices.DeleteAsync(id);
+            return result.ToHttpResponse();
         }
     }
 }

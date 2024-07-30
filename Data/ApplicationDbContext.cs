@@ -23,7 +23,7 @@ namespace Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseNpgsql(@"Server=server1.navicat.com; Port= 5432; Database= postgres; user Id = navicat; Password = testnavicat");
+            optionsBuilder.UseNpgsql(@"Server=127.0.0.1; Port= 5432; Database= LibraryApi; user Id = postgres; Password = 147852");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

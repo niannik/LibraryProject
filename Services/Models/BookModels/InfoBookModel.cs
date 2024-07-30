@@ -8,7 +8,7 @@ namespace Services.Models.BookModels
 {
     public class InfoBookModel
     {
-        public required ShowBookModel BookModel { get; set; }
+        public ShowBookModel? BookModel { get; set; }
         public required int BorrowedCount { get; set; }
         public Status Status { get; set; }
     }

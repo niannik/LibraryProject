@@ -14,10 +14,6 @@ namespace Services.Models.AuthorModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (Name == null)
-            {
-                yield return new ValidationResult("نام نویسنده نمیتواند خالی باشد");
-            }
             if (Name.Equals("Empty", StringComparison.OrdinalIgnoreCase))
             {
                 yield return new ValidationResult("نام نویسنده نمیتواند Empty باشد");

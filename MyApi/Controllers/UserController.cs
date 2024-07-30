@@ -1,5 +1,7 @@
-﻿using Entities;
+﻿using Common;
+using Entities;
 using Microsoft.AspNetCore.Mvc;
+using MyApi.ExceptionExtensions;
 using Services;
 using Services.Models;
 using Services.Models.UserModels;
@@ -19,50 +21,43 @@ namespace MyApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<User>>> Get()
         {
-            var users = userServices.ShowUsers();
-            return Ok(users);
+            var users =await userServices.ShowUsers();
+            return users.ToHttpResponse();
         }
         
         [HttpPost]
         public async Task<ActionResult> Create(UserModel model)
         {
-            await userServices.AddAsync(model);
-            return Ok();
+            Result result = await userServices.AddAsync(model);
+            return result.ToHttpResponse();
         }
         
         [HttpPut]
         public async Task<ActionResult> Update(int id , UserModel model)
         {
-            await userServices.UpdateAsync(id, model);
-            return Ok();
+            Result result =await userServices.UpdateAsync(id, model);
+            return result.ToHttpResponse();
         }
         [Route("Borrow")]
         [HttpPost]
         public async Task<ActionResult> Borrow(AddUpdateBrrowedBookModel model)
         {
-            if(await userServices.UserBorrowABook(model))
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
-            
+            Result result = await userServices.UserBorrowABook(model);
+            return result.ToHttpResponse();
         }
 
         [Route("Refund")]
         [HttpPut]
         public async Task<ActionResult> Refund(int Id)
         {
-            await userServices.UserRefundABook(Id);
-            return Ok();
+            Result result = await userServices.UserRefundABook(Id);
+            return result.ToHttpResponse();
         }
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            await userServices.DeleteAsync(id);
-            return Ok();
+            Result result =  await userServices.DeleteAsync(id);
+            return result.ToHttpResponse();
         }
     }
 }

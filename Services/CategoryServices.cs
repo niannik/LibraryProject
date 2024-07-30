@@ -1,7 +1,10 @@
-﻿using Data;
+﻿using Common;
+using Data;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Services.Errors;
 using Services.Models;
+using Services.Models.AuthorModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,39 +21,60 @@ namespace Services
         {
             this.context = context;
         }
-        public async Task<Category> FindById(int id)
+
+        public async Task<Result<List<ShowCategoriesModel>>> ShowCategories()
+        {
+            var categories = await context.Categories
+                .Select(x => new ShowCategoriesModel
+                {
+                    Name = x.Name,
+
+                }).ToListAsync();
+            if (categories.Count == 0)
+            {
+                return CategoryErrors.EmptyCategoryTable;
+            }
+            return categories;
+        }
+        public async Task<Category?> FindById(int id)
         {
 
             var category = await context.Categories.Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
-            if (category == null)
-            {
-                //
-            }
             return category;
         }
-        public async Task AddAsync(CategoryModel model)
+        public async Task<Result> AddAsync(CategoryModel model)
         {
             Category category = new Category()
             {
                 Name = model.Name
-
             };
             context.Categories.Add(category);
             await context.SaveChangesAsync();
+            return Result.Success();
         }
-        public async Task DeleteAsync(int id)
+        public async Task<Result> DeleteAsync(int id)
         {
-            Category category = await FindById(id);
+            Category? category = await FindById(id);
+            if (category == null)
+            {
+                return CategoryErrors.CategoryNotFound;
+            }
             context.Categories.Remove(category);
             await context.SaveChangesAsync();
+            return Result.Success();
         }
 
-        public async Task UpdateAsync(UpdateCategoryModel model)
+        public async Task<Result> UpdateAsync(UpdateCategoryModel model)
         {
-            Category oldCategory = await FindById(model.Id);
-            oldCategory.Name = model.Name;
+            Category? category = await FindById(model.Id);
+            if (category == null)
+            {
+                return CategoryErrors.CategoryNotFound;
+            }
+            category.Name = model.Name;
             await context.SaveChangesAsync();
+            return Result.Success();
         }
     }
 }
