@@ -3,6 +3,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Services;
+using WebFramework;
 
 namespace MyApi
 {
@@ -14,7 +15,8 @@ namespace MyApi
 
             // Add services to the container.
 
-            builder.Services.AddControllers(); builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services.AddControllers(); 
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(@"Server=127.0.0.1; Port= 5432; Database= LibraryApi; user Id = postgres; Password = 147852");
             });
@@ -24,10 +26,15 @@ namespace MyApi
             builder.Services.AddScoped<BorrowedBookServices>();
             builder.Services.AddScoped<CategoryServices>();
             builder.Services.AddScoped<UserServices>();
+            builder.Services.AddScoped<AuthServices>();
+            builder.Services.AddScoped<JwtServices>();
+            builder.Services.AddScoped<UserBooksServices>();
+         
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             //builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddCustomIdentity();
+            builder.Services.AddJwtAuthentication();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -38,8 +45,8 @@ namespace MyApi
             }
 
             app.UseHttpsRedirection();
-
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
 
             app.MapControllers();

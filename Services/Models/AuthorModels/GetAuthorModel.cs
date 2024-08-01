@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Models.AuthorModels
 {
-    public class ShowAuthorModel
+    public class GetAuthorModel
     {
         public required int Id { get; set; }
         public required string Name { get; set; }

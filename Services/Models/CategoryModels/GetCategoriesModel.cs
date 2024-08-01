@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Models
+namespace Services.Models.CategoryModels
 {
-    public class ShowCategoriesModel
+    public class GetCategoriesModel
     {
         public string Name { get; set; }
     }

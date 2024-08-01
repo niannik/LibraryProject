@@ -22,11 +22,11 @@ namespace Services
             this.context = context;
         }
 
-        public async Task<Result<List<ShowBookModel>>> ShowBooks()
+        public async Task<Result<List<GetBookModel>>> GetBooks()
         {
             var book = await context.Books
                 .Where(x => !x.IsDeleted).AsQueryable()
-                .Select(x => new ShowBookModel
+                .Select(x => new GetBookModel
                 {
                     Title = x.Title,
                     Author = x.Author!.Name,
@@ -42,7 +42,7 @@ namespace Services
             return book;
 
         }
-        public async Task<Result<List<ShowBookModel>>> FilterBook(ShowFilteredBook filter)
+        public async Task<Result<List<GetBookModel>>> FilterBook(GetFilteredBook filter)
         {
             var query = context.Books
                 .Where(x => !x.IsDeleted);
@@ -61,7 +61,7 @@ namespace Services
                     .Any(x => x.CategoryId == filter.CategoryId.Value));
             }
 
-            return await query.Select(x => new ShowBookModel() {
+            return await query.Select(x => new GetBookModel() {
                 Title = x.Title,
                 Author = x.Author!.Name,
                 Categories = x.BookCategories!
@@ -70,11 +70,11 @@ namespace Services
                 }).ToListAsync();
 
         }
-        public async Task<Result<InfoBookModel>> ShowBookInfo(int id)
+        public async Task<Result<InfoBookModel>> GetBookInfo(int id)
         {
             var book =context.Books
                 .Where(x => !x.IsDeleted && x.Id == id)
-                .Select(x => new ShowBookModel
+                .Select(x => new GetBookModel
                 {
                     Title = x.Title,
                     Author = x.Author!.Name,

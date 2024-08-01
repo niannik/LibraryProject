@@ -20,10 +20,10 @@ namespace Services
         {
             this.context = context;
         }
-        public async Task<Result<List<ShowAuthorModel>>> ShowAuthors()
+        public async Task<Result<List<GetAuthorModel>>> ShowAuthors()
         {
             var authors =await context.Authors
-                .Select(x => new ShowAuthorModel
+                .Select(x => new GetAuthorModel
                 {
                     Id = x.Id,
                     Name = x.Name,

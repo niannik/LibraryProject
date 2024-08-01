@@ -10,28 +10,30 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Models.BookModels;
 using MyApi.ExceptionExtensions;
 using Common;
+using Microsoft.AspNetCore.Authorization;
 namespace MyApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = Permission.Admin)]
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly BookServices bookServices;
+        private readonly BookServices _bookServices;
         public BookController(BookServices bookServices)
         {
-            this.bookServices = bookServices;
+            this._bookServices = bookServices;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ShowBookModel?>>> Get()
+        public async Task<ActionResult<List<GetBookModel?>>> Get()
         {
-            var books = await bookServices.ShowBooks();
+            var books = await _bookServices.GetBooks();
             return books.ToHttpResponse()!;
         }
         [HttpGet("Filter")]
-        public async Task<ActionResult<List<ShowBookModel?>>> Filter([FromQuery]ShowFilteredBook showFilteredBook)
+        public async Task<ActionResult<List<GetBookModel?>>> Filter([FromQuery]GetFilteredBook showFilteredBook)
         {
-            var books = await bookServices.FilterBook(showFilteredBook);
+            var books = await _bookServices.FilterBook(showFilteredBook);
             return books.ToHttpResponse()!;
         }
 
@@ -39,13 +41,13 @@ namespace MyApi.Controllers
         [HttpGet]
         public async Task<ActionResult<InfoBookModel>> GetInfo([FromQuery] int id)
         {
-            var book = await bookServices.ShowBookInfo(id);
+            var book = await _bookServices.GetBookInfo(id);
             return book.ToHttpResponse();
         }
         [HttpPost]
         public async Task<ActionResult> Create(CreateBookModel book)
         {
-            Result result = await bookServices.AddAsync(book);
+            Result result = await _bookServices.AddAsync(book);
             return result.ToHttpResponse();
             
         }
@@ -53,14 +55,14 @@ namespace MyApi.Controllers
         [HttpPut]
         public async Task<ActionResult> Update(UpdateBookModel book)
         {
-            Result result = await bookServices.UpdateAsync(book);
+            Result result = await _bookServices.UpdateAsync(book);
             return result.ToHttpResponse();
         }
          
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            Result result = await bookServices.DeleteAsync(id);
+            Result result = await _bookServices.DeleteAsync(id);
             return result.ToHttpResponse();
         }
     }

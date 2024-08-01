@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Services.Errors;
 using Services.Models;
 using Services.Models.AuthorModels;
+using Services.Models.CategoryModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,10 @@ namespace Services
             this.context = context;
         }
 
-        public async Task<Result<List<ShowCategoriesModel>>> ShowCategories()
+        public async Task<Result<List<GetCategoriesModel>>> ShowCategories()
         {
             var categories = await context.Categories
-                .Select(x => new ShowCategoriesModel
+                .Select(x => new GetCategoriesModel
                 {
                     Name = x.Name,
 

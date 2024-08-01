@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Models.BookModels
 {
-    public class ShowFilteredBook
+    public class GetFilteredBook
     {
         public string? Title {  get; set; }
         public int? AuthorId { get; set; }

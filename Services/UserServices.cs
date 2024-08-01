@@ -1,6 +1,7 @@
 ﻿using Common;
 using Data;
 using Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services.Errors;
 using Services.Models;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Services
@@ -18,11 +20,13 @@ namespace Services
     {
         private readonly ApplicationDbContext context;
         private readonly BorrowedBookServices borrowedBookServices;
+        private readonly JwtServices jwtServices;
 
-        public UserServices(ApplicationDbContext context, BorrowedBookServices borrowedBookServices)
+        public UserServices(ApplicationDbContext context, BorrowedBookServices borrowedBookServices , JwtServices jwtServices)
         {
             this.context = context;
             this.borrowedBookServices = borrowedBookServices;
+            this.jwtServices = jwtServices;
         }
         public async Task<Result<List<User>>> ShowUsers()
         {
@@ -33,7 +37,6 @@ namespace Services
             }
             return users;
         }
-
         public async Task<User?> FindById(int id)
         {
             var user = await context.Users.Where(x => x.Id == id)
@@ -41,15 +44,18 @@ namespace Services
                 .FirstOrDefaultAsync();
             return user;
         }
-
-
+ 
         public async Task<Result> AddAsync(UserModel model)
         {
+            var hashedPassword = PasswordHasher.GetSha256Hash(model.Password);
             User user = new User()
             {
-                Name = model.Name,
+                UserName = model.UserName,
+                PasswordHash = hashedPassword,
+                SecurityStamp = Guid.NewGuid().ToString(),
                 Address = model.Address,
-                Phone = model.Phone
+                Phone = model.Phone,
+                LastLoginDate = DateTime.Now
             };
             context.Users.Add(user);
             await context.SaveChangesAsync();
@@ -74,15 +80,21 @@ namespace Services
             {
                 return UserErrors.UserNotFound;
             }
-            user.Name = model.Name;
+            user.UserName = model.UserName;
             user.Address = model.Address;
             user.Phone = model.Phone;
             return Result.Success();
         }
 
+        public async Task UpdateLastLoginDateAsync(User user)
+        {
+            user.LastLoginDate = DateTime.Now;
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
+        }
         public async Task<Result> UserBorrowABook(AddUpdateBrrowedBookModel model)
         {
-            Result result = await borrowedBookServices.AddBorrowedBook(model);
+            Result result = await borrowedBookServices.AddBorrowedBook(model.UserId , model.BookId);
             if (result.IsSucceeded)
             {
                 return Result.Success();

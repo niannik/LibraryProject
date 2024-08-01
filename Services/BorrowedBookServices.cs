@@ -7,6 +7,7 @@ using Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,21 +21,29 @@ namespace Services
         {
             this.context = context;
         }
-        public async Task<Result> AddBorrowedBook(AddUpdateBrrowedBookModel model)
+        public async Task<Result> AddBorrowedBook(int userId, int bookId)
         {
+            var model = new AddUpdateBrrowedBookModel
+            {
+                BookId = bookId,
+                UserId = userId,
+                StartDate = DateTime.Now,
+            };
             var bookIsAlreadyInBorrowed = await context.BorrowedBooks.AnyAsync(x => x.BookId == model.BookId && x.EndDate == null);
             if (bookIsAlreadyInBorrowed)
             {
-                // book already in use
                 return BorrowedBooksErrors.InvalidBorrow;
             }
 
             if(await context.Books.AnyAsync(x => x.Id == model.BookId) == false)
             {
-                // book not found
                 return BookErrors.BookNotFound;
             }
 
+            if(await context.BorrowedBooks.AnyAsync(x => x.UserId == userId && x.EndDate == null))
+            {
+                return BorrowedBooksErrors.AlreadyHaveABook;
+            }
             var borrow = new BorrowedBook()
             {
                 StartDate = model.StartDate,
@@ -56,9 +65,9 @@ namespace Services
                 .FirstOrDefaultAsync();
             return borrowedBook;
         }
-        public async Task<Result> UpdateStatusToRefunded(int id)
+        public async Task<Result> UpdateStatusToRefunded(int borrowId)
         {
-            var borrowedBook =await FindById(id);
+            var borrowedBook =await FindById(borrowId);
             if(borrowedBook == null)
             {
                 return BookErrors.BookNotFound;
@@ -76,10 +85,11 @@ namespace Services
             }
         }
        
-        public async Task<List<BorrowedBookModel>> CurrentBorrowedBooks()
+        public async Task<List<BorrowedBookModel>> CurrentBorrowedBooks(int id)
         {
             
             var books = await context.BorrowedBooks
+                .Where(x => x.UserId == id)
                 .Include(x => x.User)
                 .Include(x => x.Book)!
                 .ThenInclude(x => x.Author)
@@ -89,7 +99,7 @@ namespace Services
                 .Where(x => x.EndDate == null)
                 .Select(x => new BorrowedBookModel
                 {
-                    Username = x.User!.Name,
+                    Username = x.User!.UserName,
                     BookInfo = new BorrowedBookModel.BookDto()
                     {
                         Title = x.Book!.Title,
@@ -102,9 +112,10 @@ namespace Services
                 .ToListAsync();
             return books;
         }
-        public async Task<List<BorrowedBookModel>> PreviousBorrowedBook()
+        public async Task<List<BorrowedBookModel>> PreviousBorrowedBook(int id)
         {
             var books = await context.BorrowedBooks
+                .Where(x => x.UserId == id)
                 .Include(x => x.User)
                 .Include(x => x.Book)!
                 .ThenInclude(x => x.Author)
@@ -114,7 +125,7 @@ namespace Services
                 .Where(x => x.EndDate != null)
                 .Select(x => new BorrowedBookModel
                 {
-                    Username = x.User!.Name,
+                    Username = x.User!.UserName,
                     BookInfo = new BorrowedBookModel.BookDto()
                     {
                         Title = x.Book!.Title,

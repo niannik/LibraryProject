@@ -6,24 +6,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Change : Migration
+    public partial class AddLastLoginDate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "EndDate",
-                table: "BorrowedBooks",
-                type: "timestamp with time zone",
-                nullable: true);
+                name: "LastLoginDate",
+                table: "AspNetUsers",
+                type: "timestamp without time zone",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "EndDate",
-                table: "BorrowedBooks");
+                name: "LastLoginDate",
+                table: "AspNetUsers");
         }
     }
 }
