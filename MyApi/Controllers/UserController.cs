@@ -7,6 +7,7 @@ using MyApi.ExceptionExtensions;
 using Services;
 using Services.Models;
 using Services.Models.UserModels;
+using Services.ResponseModels;
 
 namespace MyApi.Controllers
 {
@@ -22,9 +23,9 @@ namespace MyApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> Get()
+        public async Task<ActionResult<GetListOfUsers>> Get()
         {
-            var users =await _userServices.ShowUsers();
+            var users =await _userServices.GetUsers();
             return users.ToHttpResponse();
         }
 

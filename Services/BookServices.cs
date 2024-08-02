@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Services.Errors;
 using Services.Models.BookModels;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -22,34 +23,38 @@ namespace Services
             this.context = context;
         }
 
-        public async Task<Result<List<GetBookModel>>> GetBooks()
+        public async Task<Result<GetListOfBook>> GetBooks()
         {
-            var book = await context.Books
+            GetListOfBook getListOfBook = new()
+            {
+                ListOfBooks = await context.Books
                 .Where(x => !x.IsDeleted).AsQueryable()
                 .Select(x => new GetBookModel
                 {
+                    Id = x.Id,
                     Title = x.Title,
                     Author = x.Author!.Name,
                     Categories = x.BookCategories!
                     .Select(x => x.Category!.Name)
                     .ToArray()
-                }).ToListAsync();
+                }).ToListAsync()
+            };
 
-            if(book.Count == 0)
+            if(getListOfBook.ListOfBooks.Count == 0)
             {
                 return BookErrors.EmptyBookTable;
             }
-            return book;
+            return getListOfBook;
 
         }
-        public async Task<Result<List<GetBookModel>>> FilterBook(GetFilteredBook filter)
+        public async Task<Result<GetListOfBook>> FilterBook(GetFilteredBook filter)
         {
             var query = context.Books
                 .Where(x => !x.IsDeleted);
               
             if(filter.Title != null)
             {
-                query =query.Where(x => x.Title == filter.Title);
+                query =query.Where(x => x.Title.Contains(filter.Title));
             }
             if(filter.AuthorId != null)
             {
@@ -60,14 +65,19 @@ namespace Services
                 query =query.Where(x => x.BookCategories!
                     .Any(x => x.CategoryId == filter.CategoryId.Value));
             }
-
-            return await query.Select(x => new GetBookModel() {
-                Title = x.Title,
-                Author = x.Author!.Name,
-                Categories = x.BookCategories!
+            GetListOfBook getListOfBook = new()
+            {
+                ListOfBooks = await query.Select(x => new GetBookModel()
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Author = x.Author!.Name,
+                    Categories = x.BookCategories!
                     .Select(x => x.Category!.Name)
                     .ToArray()
-                }).ToListAsync();
+                }).ToListAsync()
+            };
+            return getListOfBook;
 
         }
         public async Task<Result<InfoBookModel>> GetBookInfo(int id)
@@ -76,6 +86,7 @@ namespace Services
                 .Where(x => !x.IsDeleted && x.Id == id)
                 .Select(x => new GetBookModel
                 {
+                    Id = x.Id,
                     Title = x.Title,
                     Author = x.Author!.Name,
                     Categories = x.BookCategories!

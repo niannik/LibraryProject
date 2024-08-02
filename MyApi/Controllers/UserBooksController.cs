@@ -4,6 +4,7 @@ using MyApi.ExceptionExtensions;
 using Services;
 using Services.Models.BookModels;
 using Services.Models.UserModels;
+using Services.ResponseModels;
 
 namespace MyApi.Controllers
 {
@@ -19,9 +20,9 @@ namespace MyApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GetBookModel>>> GetList()
+        public async Task<ActionResult<GetListOfBook>> GetList()
         {
-            var books =await _userBooksServices.ShowBooks();
+            var books =await _userBooksServices.GetBooksByUser();
             return books.ToHttpResponse();
         }
         [HttpGet("Status")]

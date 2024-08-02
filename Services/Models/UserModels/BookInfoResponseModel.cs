@@ -9,6 +9,7 @@ namespace Services.Models.UserModels
 {
     public class BookInfoResponseModel
     {
+        public required int Id { get; set; }
         public required string Title { get; set; }
         public required string Author { get; set; }
         public required List<string> Categories { get; set; }

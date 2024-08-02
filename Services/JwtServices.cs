@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,7 +19,7 @@ namespace Services
         {
             this.signInManager = signInManager;
         }
-        public async Task<string> GenerateToken(User user)
+        public async Task<LoginResponse> GenerateToken(User user)
         {
             var secretKey = Encoding.UTF8.GetBytes("MySecretKey123456789SecretMy1233456789");
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey) , SecurityAlgorithms.HmacSha256);
@@ -43,10 +44,12 @@ namespace Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(discriptor);
-            var jwt = tokenHandler.WriteToken(securityToken); //output : JWT ramznegari shode
+            LoginResponse loginResponse = new()
+            {
+                Token = tokenHandler.WriteToken(securityToken)
+            };
 
-
-            return jwt;
+            return loginResponse;
         }
         private async Task<IEnumerable<Claim>> GetClaims(User user)
         {

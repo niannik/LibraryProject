@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Services.Errors;
 using Services.Models.AuthorModels;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,21 +21,25 @@ namespace Services
         {
             this.context = context;
         }
-        public async Task<Result<List<GetAuthorModel>>> ShowAuthors()
+        public async Task<Result<GetListOfAuthors>> GetAuthors()
         {
-            var authors =await context.Authors
+            GetListOfAuthors authorsList = new()
+            {
+                ListOfAuthors = await context.Authors!
                 .Select(x => new GetAuthorModel
                 {
                     Id = x.Id,
                     Name = x.Name,
                     BooksCount = x.Books!.Count(),
 
-                }).ToListAsync();
-            if (authors.Count == 0)
+                }).ToListAsync()
+            };
+ 
+            if (authorsList.ListOfAuthors.Count == 0)
             {
                 return AuthorErrors.EmptyAuthorTable;
             }
-            return authors;
+            return authorsList;
         }
 
         public async Task<Author?> FindById(int id)

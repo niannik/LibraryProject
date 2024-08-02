@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApi.ExceptionExtensions;
 using Services;
+using Services.ResponseModels;
 
 namespace MyApi.Controllers
 {
@@ -15,9 +16,9 @@ namespace MyApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> SignIn(string userName, string password)
+        public async Task<ActionResult<LoginResponse>> SignIn(string userName, string password)
         {
-            var token = await _authServices.GenerateToken(userName, password);
+            var token = await _authServices.LogInWithPassword(userName, password);
             return token.ToHttpResponse();
         }
     }

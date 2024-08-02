@@ -6,6 +6,7 @@ using MyApi.ExceptionExtensions;
 using Services;
 using Services.Models;
 using Services.Models.CategoryModels;
+using Services.ResponseModels;
 
 namespace MyApi.Controllers
 {
@@ -20,9 +21,9 @@ namespace MyApi.Controllers
             this._categoryServices = categoryServices;
         }
         [HttpGet]
-        public async Task<ActionResult<List<GetCategoriesModel>>> Get()
+        public async Task<ActionResult<GetListOfCategories>> Get()
         {
-            var categories = await _categoryServices.ShowCategories();
+            var categories = await _categoryServices.GetCategories();
             return categories.ToHttpResponse();
         }
         [HttpPost]

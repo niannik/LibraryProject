@@ -9,6 +9,5 @@ namespace Entities
 {
     public class Role : IdentityRole<int>
     {
-        
     }
 }

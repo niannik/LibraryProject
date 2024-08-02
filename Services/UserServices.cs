@@ -7,6 +7,7 @@ using Services.Errors;
 using Services.Models;
 using Services.Models.AuthorModels;
 using Services.Models.UserModels;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,14 +29,17 @@ namespace Services
             this.borrowedBookServices = borrowedBookServices;
             this.jwtServices = jwtServices;
         }
-        public async Task<Result<List<User>>> ShowUsers()
+        public async Task<Result<GetListOfUsers>> GetUsers()
         {
-            var users =await context.Users.AsNoTracking().ToListAsync();
-            if(users.Count == 0)
+            GetListOfUsers listOfUsers = new()
+            {
+                ListOfUsers = await context.Users.AsNoTracking().ToListAsync()
+            };
+            if(listOfUsers.ListOfUsers.Count == 0)
             {
                 return UserErrors.EmptyUserTable;
             }
-            return users;
+            return listOfUsers;
         }
         public async Task<User?> FindById(int id)
         {

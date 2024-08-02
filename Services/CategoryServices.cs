@@ -6,6 +6,7 @@ using Services.Errors;
 using Services.Models;
 using Services.Models.AuthorModels;
 using Services.Models.CategoryModels;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,20 +23,24 @@ namespace Services
         {
             this.context = context;
         }
-
-        public async Task<Result<List<GetCategoriesModel>>> ShowCategories()
+        public async Task<Result<GetListOfCategories>> GetCategories()
         {
-            var categories = await context.Categories
+            GetListOfCategories listOfCategories = new()
+            {
+                CategoriesList = await context.Categories
                 .Select(x => new GetCategoriesModel
                 {
+                    Id = x.Id,
                     Name = x.Name,
 
-                }).ToListAsync();
-            if (categories.Count == 0)
+                }).ToListAsync()
+            };
+
+            if (listOfCategories.CategoriesList.Count == 0)
             {
                 return CategoryErrors.EmptyCategoryTable;
             }
-            return categories;
+            return listOfCategories;
         }
         public async Task<Category?> FindById(int id)
         {

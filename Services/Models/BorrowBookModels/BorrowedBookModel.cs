@@ -8,6 +8,7 @@ namespace Services.Models
 {
     public record BorrowedBookModel
     {
+        public required int Id { get; set; }
         public required string Username { get; set; }
         public required BookDto BookInfo { get; set; }
 

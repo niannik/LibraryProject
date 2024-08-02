@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Services.Errors;
 using Services.Models;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,10 +86,11 @@ namespace Services
             }
         }
        
-        public async Task<List<BorrowedBookModel>> CurrentBorrowedBooks(int id)
+        public async Task<GetListOfBorrowedBook> CurrentBorrowedBooks(int id)
         {
-            
-            var books = await context.BorrowedBooks
+            GetListOfBorrowedBook getListOfBorrowedBook = new()
+            {
+                BorrowedBookList = await context.BorrowedBooks
                 .Where(x => x.UserId == id)
                 .Include(x => x.User)
                 .Include(x => x.Book)!
@@ -99,7 +101,8 @@ namespace Services
                 .Where(x => x.EndDate == null)
                 .Select(x => new BorrowedBookModel
                 {
-                    Username = x.User!.UserName,
+                    Id = x.Id,
+                    Username = x.User!.UserName!,
                     BookInfo = new BorrowedBookModel.BookDto()
                     {
                         Title = x.Book!.Title,
@@ -109,12 +112,15 @@ namespace Services
                         .ToList()
                     }
                 })
-                .ToListAsync();
-            return books;
+                .ToListAsync()
+            };
+            return getListOfBorrowedBook;
         }
-        public async Task<List<BorrowedBookModel>> PreviousBorrowedBook(int id)
+        public async Task<GetListOfBorrowedBook> PreviousBorrowedBook(int id)
         {
-            var books = await context.BorrowedBooks
+            GetListOfBorrowedBook getListOfBorrowedBook = new()
+            {
+                BorrowedBookList = await context.BorrowedBooks
                 .Where(x => x.UserId == id)
                 .Include(x => x.User)
                 .Include(x => x.Book)!
@@ -125,7 +131,8 @@ namespace Services
                 .Where(x => x.EndDate != null)
                 .Select(x => new BorrowedBookModel
                 {
-                    Username = x.User!.UserName,
+                    Id = x.Id,
+                    Username = x.User!.UserName!,
                     BookInfo = new BorrowedBookModel.BookDto()
                     {
                         Title = x.Book!.Title,
@@ -135,8 +142,10 @@ namespace Services
                         .ToList()
                     }
                 })
-                .ToListAsync();
-            return books;
+                .ToListAsync()
+            };
+
+            return getListOfBorrowedBook;
         }
     }
 }

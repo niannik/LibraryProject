@@ -4,6 +4,7 @@ using Services;
 using Services.Models.AuthorModels;
 using MyApi.ExceptionExtensions;
 using Microsoft.AspNetCore.Authorization;
+using Services.ResponseModels;
 
 namespace MyApi
 {
@@ -18,9 +19,9 @@ namespace MyApi
             _authorServices = authorServices;
         }
         [HttpGet]
-        public async Task<ActionResult<List<GetAuthorModel>>> Get()
+        public async Task<ActionResult<GetListOfAuthors>> Get()
         {
-            var authors = await _authorServices.ShowAuthors();
+            var authors = await _authorServices.GetAuthors();
             return authors.ToHttpResponse();
         }
         [HttpPost]

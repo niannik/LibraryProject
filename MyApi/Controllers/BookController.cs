@@ -11,6 +11,7 @@ using Services.Models.BookModels;
 using MyApi.ExceptionExtensions;
 using Common;
 using Microsoft.AspNetCore.Authorization;
+using Services.ResponseModels;
 namespace MyApi.Controllers
 {
     [Route("api/[controller]")]
@@ -25,13 +26,13 @@ namespace MyApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GetBookModel?>>> Get()
+        public async Task<ActionResult<GetListOfBook>> Get()
         {
             var books = await _bookServices.GetBooks();
             return books.ToHttpResponse()!;
         }
         [HttpGet("Filter")]
-        public async Task<ActionResult<List<GetBookModel?>>> Filter([FromQuery]GetFilteredBook showFilteredBook)
+        public async Task<ActionResult<GetListOfBook>> Filter([FromQuery]GetFilteredBook showFilteredBook)
         {
             var books = await _bookServices.FilterBook(showFilteredBook);
             return books.ToHttpResponse()!;

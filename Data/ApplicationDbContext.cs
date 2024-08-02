@@ -63,6 +63,12 @@ namespace Data
             modelBuilder.Entity<User>()
                 .HasKey(x => x.Id);
 
+            modelBuilder.Entity<Role>()
+                .Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Role>()
+                .HasKey(x => x.Id);
+
             modelBuilder.Entity<BorrowedBook>()
                 .Property(x => x.Id)
                 .ValueGeneratedOnAdd();

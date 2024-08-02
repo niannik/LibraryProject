@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Services.Errors;
 using Services.Models.BookModels;
 using Services.Models.UserModels;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +23,14 @@ namespace Services
             _bookServices = bookServices;
         }
 
-        public async Task<Result<List<GetBookModel>>> ShowBooks()
+        public async Task<Result<GetListOfBook>> GetBooksByUser()
         {
             var books =await _bookServices.GetBooks();
             return books;
 
         }
 
-        public async Task<Result<BookInfoResponseModel>> GetBookInfo(int id)
+        public async Task<Result<BookInfoResponseModel?>> GetBookInfo(int id)
         {
             var query = _context.BorrowedBooks.Where(x => x.BookId == id);
             if(query.Count() == 0)
@@ -40,9 +41,10 @@ namespace Services
             {
                 var newQery = query.Select(x => new BookInfoResponseModel
                 {
+                    Id = x.Id,
                     Title = x.Book!.Title,
                     Author = x.Book.Author!.Name,
-                    Categories  = x.Book.BookCategories!.Select(x => x.Category.Name).ToList(),
+                    Categories  = x.Book.BookCategories!.Select(x => x.Category!.Name).ToList(),
                     Accessibility = "Borrowed"
                 }).FirstOrDefaultAsync();
                 return await newQery;
@@ -51,9 +53,10 @@ namespace Services
             {
                 var newQery = await query.Select(x => new BookInfoResponseModel
                 {
+                    Id = x.Id,
                     Title = x.Book!.Title,
                     Author = x.Book.Author!.Name,
-                    Categories = x.Book.BookCategories!.Select(x => x.Category.Name).ToList(),
+                    Categories = x.Book.BookCategories!.Select(x => x.Category!.Name).ToList(),
                     Accessibility = "Accessible"
                 }).FirstOrDefaultAsync();
                 return newQery;

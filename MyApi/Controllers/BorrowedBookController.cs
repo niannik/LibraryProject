@@ -25,7 +25,7 @@ namespace MyApi.Controllers
         public async Task<ActionResult<List<BorrowedBookModel>>> GetCurrent()
         {
             var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var id = int.Parse(idStr);
+            var id = int.Parse(idStr!);
             var books =await _borrowedBookServices.CurrentBorrowedBooks(id);
             return Ok(books);
         }
@@ -34,7 +34,7 @@ namespace MyApi.Controllers
         public async Task<ActionResult<List<BorrowedBookModel>>> GetPrevious()
         {
             var str = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var id = int.Parse(str);
+            var id = int.Parse(str!);
             var books = await _borrowedBookServices.PreviousBorrowedBook(id);
             return Ok(books);
         }
@@ -43,7 +43,7 @@ namespace MyApi.Controllers
         public async Task<ActionResult> Borrow(int bookId)
         {
             var str = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var id = int.Parse(str);
+            var id = int.Parse(str!);
             Result result = await _borrowedBookServices.AddBorrowedBook(id , bookId);
             return result.ToHttpResponse();
         }

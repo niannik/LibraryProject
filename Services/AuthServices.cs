@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services.Errors;
+using Services.ResponseModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,16 +29,15 @@ namespace Services
                 .FirstOrDefaultAsync();
             return user;
         }
-        public async Task<Result<string>> GenerateToken(string userName, string password)
+        public async Task<Result<LoginResponse>> LogInWithPassword(string userName, string password)
         {
             var user = await FindByUserNameAndPass(userName, password);
             if (user == null)
             {
                 return UserErrors.UserNotFound;
             }
-            var jwt = await jwtServices.GenerateToken(user);
-            await context.SaveChangesAsync();
-            return jwt;
+
+            return await jwtServices.GenerateToken(user);
         }
 
     }
