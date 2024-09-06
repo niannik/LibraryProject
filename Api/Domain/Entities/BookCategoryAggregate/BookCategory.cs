@@ -6,9 +6,8 @@ namespace Domain.Entities.BookCategoryAggregate;
 
 public class BookCategory : Entity
 {
-    public BookCategory() { }
-    public required int BookId { get; set; }
-    public required int CategoryId { get; set; }
+    public int BookId { get; set; }
+    public int CategoryId { get; set; }
     public Book? Book { get; set; }
     public Category? Category { get; set; }
 }

@@ -14,7 +14,7 @@ namespace Infrastructure.Persistence.Configurations.Category
             builder.HasMany(x => x.BookCategories)
                 .WithOne(x => x.Category)
                 .HasForeignKey(x => x.CategoryId)
-                .IsRequired();
+                .IsRequired(false);
         }
     }
 }

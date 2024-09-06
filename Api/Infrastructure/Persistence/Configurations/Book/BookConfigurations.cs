@@ -19,7 +19,7 @@ public class BookConfigurations : IEntityTypeConfiguration<Domain.Entities.BookA
         builder.HasMany(x => x.BookCategories)
             .WithOne(x => x.Book)
             .HasForeignKey(x => x.BookId)
-            .IsRequired();
+            .IsRequired(false);
         builder.HasMany(x => x.BorrowedBooks)
             .WithOne(x => x.Book)
             .HasForeignKey(x => x.BookId)

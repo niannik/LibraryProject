@@ -12,10 +12,10 @@ public class BookCategoryConfiguration : IEntityTypeConfiguration<Domain.Entitie
         builder.HasOne(x => x.Book)
             .WithMany(x => x.BookCategories)
             .HasForeignKey(x => x.BookId)
-            .IsRequired();
+            .IsRequired(false);
         builder.HasOne(x => x.Category)
             .WithMany(x => x.BookCategories)
             .HasForeignKey(x => x.CategoryId)
-            .IsRequired();
+            .IsRequired(false);
     }
 }
